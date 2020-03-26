@@ -1,0 +1,33 @@
+@font-face {
+  font-family: Bitter;
+  src: url(./fonts/Bitter-Regular.ttf);
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: Bitter;
+  src: url(./fonts/Bitter-Bold.ttf);
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: Bitter;
+  src: url(./fonts/Bitter-Italic.ttf);
+  font-weight: normal;
+  font-style: italic;
+}
+
+
+body {
+  margin: 0;
+  font-family: Bitter;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
