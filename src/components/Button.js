@@ -1,10 +1,12 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import {
   c_CALL_TO_ACTION,
   c_READY_FOR_ACTION,
   c_IN_ACTION,
   c_TEXT_DARK,
+  n_BORDER_RADIUS,
 } from '../theme';
 
 function Button(props) {
@@ -15,7 +17,7 @@ function Button(props) {
         .button {
           display: inline-block;
           padding: 1rem 2rem;
-          border-radius: 0.5rem;
+          border-radius: ${n_BORDER_RADIUS};
           transition: 0.1s all;
           background: ${c_CALL_TO_ACTION};
           cursor: pointer;
@@ -34,5 +36,9 @@ function Button(props) {
     </div>
   );
 }
+
+Button.propTypes = {
+  onClick: PropTypes.func,
+};
 
 export default Button;

@@ -30,10 +30,13 @@ const c_TEXT_LIGHT = '#e8f4e6';
 const c_TEXT_DARK = c_SECONDARY_DARK;
 const c_BACKGROUND = c_PRIMARY_DARK;
 const c_HEADER = c_PRIMARY_DARKER;
+const c_DARK_BORDER = c_SECONDARY_DARK;
 
 const c_CALL_TO_ACTION = c_TERTIARY;
 const c_READY_FOR_ACTION = c_TERTIARY_LIGHTER;
 const c_IN_ACTION = c_TERTIARY_LIGHT;
+
+const n_BORDER_RADIUS = '0.5rem';
 
 export {
   c_TEXT_LIGHT,
@@ -43,4 +46,6 @@ export {
   c_CALL_TO_ACTION,
   c_READY_FOR_ACTION,
   c_IN_ACTION,
+  n_BORDER_RADIUS,
+  c_DARK_BORDER,
 };

@@ -9,11 +9,12 @@ import {
 } from '@apollo/client';
 
 import Welcome from './pages/Welcome';
+import Lobby from './pages/Lobby';
 
 const client = new ApolloClient({
   cache: new InMemoryCache(),
   link: new HttpLink({
-    uri: 'https://localhost:4000/graphql', // TODO make work for prod
+    uri: 'http://localhost:4000/graphql', // TODO make work for prod
   }),
 });
 
@@ -22,6 +23,7 @@ function App() {
     <ApolloProvider client={client}>
       <Router>
         <Welcome default />
+        <Lobby path="/lobby" />
       </Router>
     </ApolloProvider>
   );
