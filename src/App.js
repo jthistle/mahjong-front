@@ -10,6 +10,7 @@ import {
 
 import Welcome from './pages/Welcome';
 import Lobby from './pages/Lobby';
+import Game from './pages/Game';
 
 const client = new ApolloClient({
   cache: new InMemoryCache(),
@@ -24,6 +25,7 @@ function App() {
       <Router>
         <Welcome default />
         <Lobby path="/lobby" />
+        <Game path="/game/:hash" />
       </Router>
     </ApolloProvider>
   );

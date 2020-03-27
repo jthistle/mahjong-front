@@ -30,7 +30,7 @@ function Welcome(props) {
 
   /* Redirect user back to lobby if they are signed in */
   useEffect(() => {
-    const hash = localStorage.getItem('userId');
+    const hash = localStorage.getItem('userHash');
     if (hash) {
       redirectTo('/lobby');
     }
@@ -42,7 +42,7 @@ function Welcome(props) {
 
     const hash = createData.createUser;
     if (hash) {
-      localStorage.setItem('userId', hash);
+      localStorage.setItem('userHash', hash);
       redirectTo('/lobby');
     }
   }, [loadingCreate, createData]);

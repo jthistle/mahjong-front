@@ -21,6 +21,7 @@ function Button(props) {
           transition: 0.1s all;
           background: ${c_CALL_TO_ACTION};
           cursor: pointer;
+          margin: 0.5rem 1rem;
         }
 
         .button:hover {

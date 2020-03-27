@@ -1,0 +1,3 @@
+mutation JoinGame($userHash: String!, $gameCode: String!) {
+  joinGame(userHash: $userHash, gameCode: $gameCode)
+}
