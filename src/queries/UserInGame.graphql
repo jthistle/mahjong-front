@@ -1,0 +1,5 @@
+query UserInGame($userHash: String!) {
+  user(userHash: $userHash) {
+    inGame
+  }
+}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useMutation } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { redirectTo } from '@reach/router';
 import { loader } from 'graphql.macro';
 
@@ -9,6 +9,7 @@ import Button from '../components/Button';
 
 const CREATE_GAME = loader('../queries/CreateGame.graphql');
 const JOIN_GAME = loader('../queries/JoinGame.graphql');
+const IN_GAME = loader('../queries/UserInGame.graphql');
 
 function Lobby(props) {
   /* Error state: whether an incorrect code was entered or game can't be joined */
@@ -20,13 +21,23 @@ function Lobby(props) {
     }
   }, []);
 
-  const [gameCode, setGameCode] = useState();
+  /* Check if user already in game */
+  const { loading: loadingInGame, data: inGameData } = useQuery(IN_GAME, {
+    variables: {
+      userHash: localStorage.getItem('userHash'),
+    },
+  });
 
-  const gameCodeChanged = (event) => {
-    setGameCode(event.target.value);
-    setInErrorState(false);
-  };
+  useEffect(() => {
+    if (loadingInGame || !inGameData) return;
 
+    const possibleHash = inGameData.user.inGame;
+    if (possibleHash) {
+      redirectTo('/game/' + possibleHash);
+    }
+  }, [loadingInGame, inGameData]);
+
+  /* Game creation handling */
   const [
     createGame,
     { loading: loadingCreate, data: createData },
@@ -48,6 +59,14 @@ function Lobby(props) {
       redirectTo('/game/' + hash);
     }
   }, [loadingCreate, createData]);
+
+  /* Game joining handling */
+  const [gameCode, setGameCode] = useState();
+
+  const gameCodeChanged = (event) => {
+    setGameCode(event.target.value);
+    setInErrorState(false);
+  };
 
   const [joinGame, { loading: loadingJoin, data: joinData }] = useMutation(
     JOIN_GAME
