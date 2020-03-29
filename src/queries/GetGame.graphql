@@ -1,27 +1,8 @@
-fragment tileInfo on Tile {
-  value
-  suit
-}
-
 query GetGame($userHash: String!, $gameHash: String!) {
   game(userHash: $userHash, gameHash: $gameHash) {
     nicknames
     stage
-    turn
-    east
-    declaredTiles {
-      tiles {
-        ...tileInfo
-      }
-    }
-    playerTiles {
-      ...tileInfo
-    }
-    discardTiles {
-      ...tileInfo
-    }
     myPosition
-    startTime
     joinCode
   }
 }

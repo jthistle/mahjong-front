@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import {
   c_CALL_TO_ACTION,
-  c_DARK_BORDER,
+  c_BORDER_DARK,
   n_BORDER_RADIUS,
   c_READY_FOR_ACTION,
   c_TEXT_DARK,
@@ -22,7 +22,7 @@ function TextInput(props) {
         input {
           background: ${c_CALL_TO_ACTION};
           border: ${props.error ? 2 : 1}px solid
-            ${props.error ? c_ERROR : c_DARK_BORDER};
+            ${props.error ? c_ERROR : c_BORDER_DARK};
           border-radius: ${n_BORDER_RADIUS};
           color: ${c_TEXT_DARK};
           font-size: 1rem;
