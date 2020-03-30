@@ -42,6 +42,8 @@ const c_ERROR = '#e52f0b';
 
 const n_BORDER_RADIUS = '0.5rem';
 
+const c_TILE_RACK = '#78512D';
+
 export {
   c_TEXT_LIGHT,
   c_TEXT_DARK,
@@ -55,4 +57,5 @@ export {
   c_BORDER_LIGHT,
   c_ERROR,
   c_HIGHLIGHT,
+  c_TILE_RACK,
 };

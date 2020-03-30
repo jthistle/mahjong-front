@@ -1,0 +1,25 @@
+query GetEvents($userHash: String!, $gameHash: String!, $offset: Int!) {
+  events(
+    userHash: $userHash
+    gameHash: $gameHash
+    offset: $offset
+  ) {
+    events {
+      time
+      type
+      tile {
+        value
+        suit
+      }
+      tileSet {
+        tiles {
+          value
+          suit
+        }
+        concealed
+      }
+      player
+    }
+    offset
+  }
+}
