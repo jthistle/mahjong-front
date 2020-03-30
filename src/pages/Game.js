@@ -4,8 +4,8 @@ import { redirectTo } from '@reach/router';
 import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/client';
 
-import GameWaiting from './GameWaiting';
-import GamePlaying from './GamePlaying';
+import GameWaiting from '../components/GameWaiting';
+import GamePlaying from '../components/GamePlaying';
 
 const GET_GAME = loader('../queries/GetGame.graphql');
 

@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/client';
 import update from 'immutability-helper';
 
-import Layout from '../components/Layout';
-import TileRow from '../components/TileRow';
+import Layout from './Layout';
+import TileRow from './TileRow';
 
 import { c_BORDER_LIGHT, n_BORDER_RADIUS } from '../theme';
 

@@ -3,7 +3,7 @@ import { loader } from 'graphql.macro';
 import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/client';
 
-import Layout from '../components/Layout';
+import Layout from './Layout';
 
 import { c_BORDER_LIGHT, n_BORDER_RADIUS } from '../theme';
 
