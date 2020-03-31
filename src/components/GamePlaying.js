@@ -1,23 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import { loader } from 'graphql.macro';
 import PropTypes from 'prop-types';
-import { useQuery } from '@apollo/client';
+import { useQuery, useMutation } from '@apollo/client';
 import update from 'immutability-helper';
+import { DndProvider } from 'react-dnd';
+import Backend from 'react-dnd-html5-backend';
 
 import Layout from './Layout';
 import TileRow from './TileRow';
+import PlayerDisplay from './PlayerDisplay';
+import GameTable from './GameTable';
 
 import { c_BORDER_LIGHT, n_BORDER_RADIUS } from '../theme';
 
 const GET_EVENTS = loader('../queries/GetEvents.graphql');
+const SEND_EVENT = loader('../queries/SendEvent.graphql');
 
 function GamePlaying(props) {
   const [offset, setOffset] = useState(-1);
 
-  const [declaredTiles, setDeclaredTiles] = useState([]);
+  const [declaredTiles, setDeclaredTiles] = useState(
+    (() => {
+      const acc = [];
+      for (let i = 0; i < props.gameData.game.nicknames.length; ++i) {
+        acc.push([]);
+      }
+      return acc;
+    })()
+  );
   const [discardedTiles, setDiscardedTiles] = useState([]);
   const [myTiles, setMyTiles] = useState([]);
   const [turn, setTurn] = useState(0);
+  const [heldTile, setHeldTile] = useState();
+
+  const myPos = () => props.gameData.game.myPosition;
 
   const processEvent = (event) => {
     switch (event.type) {
@@ -40,7 +56,7 @@ function GamePlaying(props) {
         /* We can assume that the last tile added to discards was the one picked up */
         setDiscardedTiles((prevDisc) =>
           update(prevDisc, {
-            $splice: [prevDisc.length - 1, 1],
+            $splice: [[prevDisc.length - 1, 1]],
           })
         );
         setMyTiles((prevMyTiles) =>
@@ -54,7 +70,73 @@ function GamePlaying(props) {
           })
         );
         break;
+      case 'DISCARD':
+        setDiscardedTiles((prevDisc) =>
+          update(prevDisc, {
+            $push: [
+              {
+                suit: event.tile.suit,
+                value: event.tile.value,
+              },
+            ],
+          })
+        );
+        if (event.player === myPos()) {
+          setMyTiles((prevMyTiles) => {
+            let ind = null;
+            for (let i = 0; i < prevMyTiles.length; ++i) {
+              if (
+                prevMyTiles[i].suit === event.tile.suit &&
+                prevMyTiles[i].value === event.tile.value
+              ) {
+                ind = i;
+                break;
+              }
+            }
+            if (ind === null) {
+              /* This should never happen. */
+              console.error(
+                "Can't remove tile from my tiles when it was never there!"
+              );
+              return prevMyTiles;
+            }
+            return update(prevMyTiles, {
+              $splice: [[ind, 1]],
+            });
+          });
+        }
+        break;
+      default:
+        break;
     }
+  };
+
+  const [
+    actuallySendEvent,
+    { loading: loadingSend, data: sendData, error: sendError },
+  ] = useMutation(SEND_EVENT);
+
+  const sendEvent = (event) => {
+    actuallySendEvent({
+      variables: {
+        userHash: localStorage.getItem('userHash'),
+        gameHash: props.hash,
+        event,
+      },
+    });
+  };
+
+  const discardHeld = () => {
+    if (!heldTile) {
+      return;
+    }
+    console.log('discarding:', heldTile);
+    sendEvent({
+      type: 'DISCARD',
+      tile: {
+        ...heldTile,
+      },
+    });
   };
 
   const { loading: loadingEvents, data: eventsData } = useQuery(GET_EVENTS, {
@@ -75,16 +157,53 @@ function GamePlaying(props) {
     setOffset(eventsData.events.offset);
   }, [loadingEvents, eventsData]);
 
+  const renderPlayers = () => {
+    const players = [];
+    let i = myPos() + 1;
+    while (true) {
+      if (i >= props.gameData.game.nicknames.length) {
+        i = 0;
+      }
+      if (i === myPos()) {
+        break;
+      }
+      players.push(
+        <PlayerDisplay
+          key={i}
+          nickname={props.gameData.game.nicknames[i]}
+          declaredTiles={declaredTiles[i]}
+          hasCurrentTurn={i === turn}
+        />
+      );
+      i += 1;
+    }
+
+    return players;
+  };
+
   const render = () => (
     <div className="playingArea">
-      <div className="mainTable"></div>
-      <TileRow tiles={myTiles} />
+      <div className="players">{renderPlayers()}</div>
+      <GameTable
+        tiles={discardedTiles}
+        allowDiscard={turn === myPos()}
+        discardCallback={discardHeld}
+      />
+      <TileRow tiles={myTiles} setHeld={setHeldTile} />
+      <style jsx>{`
+        .players {
+          display: flex;
+          justify-content: space-between;
+        }
+      `}</style>
     </div>
   );
 
-  console.log(myTiles);
-
-  return <Layout center>{render()}</Layout>;
+  return (
+    <Layout center>
+      <DndProvider backend={Backend}>{render()}</DndProvider>
+    </Layout>
+  );
 }
 
 GamePlaying.propTypes = {

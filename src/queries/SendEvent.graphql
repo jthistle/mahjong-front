@@ -1,0 +1,3 @@
+mutation SendEvent($gameHash: String!, $userHash: String!, $event: EventInput!) {
+  sendEvent(gameHash: $gameHash, userHash: $userHash, event: $event)
+}

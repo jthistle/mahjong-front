@@ -1,10 +1,11 @@
 import React, { useState, useCallback, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import Backend from 'react-dnd-html5-backend';
 import update from 'immutability-helper';
 
 import { c_TILE_RACK, n_BORDER_RADIUS } from '../theme';
-import Tile from './Tile';
+import Tile from './DraggableTile';
 
 const TILE = 'tile';
 
@@ -41,7 +42,7 @@ const TileRow = (props) => {
         ...tile,
       }))
     );
-  }, [props]);
+  }, [props.tiles]);
 
   const moveTile = useCallback(
     (dragIndex, hoverIndex) => {
@@ -65,13 +66,14 @@ const TileRow = (props) => {
         index={index}
         text={tile.text}
         moveTile={moveTile}
+        setHeld={props.setHeld}
         {...tile}
       />
     );
   };
 
   return (
-    <DndProvider backend={Backend}>
+    <>
       <div className="container">
         {tiles.map((tile, i) => renderTile(tile, i))}
       </div>
@@ -79,14 +81,20 @@ const TileRow = (props) => {
         .container {
           display: flex;
           flex-direction: row;
+          flex-wrap: wrap;
           padding: 1rem;
           background: ${c_TILE_RACK};
           border-radius: ${n_BORDER_RADIUS};
           margin: auto;
         }
       `}</style>
-    </DndProvider>
+    </>
   );
+};
+
+TileRow.propTypes = {
+  tiles: PropTypes.array,
+  setHeld: PropTypes.func,
 };
 
 export default TileRow;

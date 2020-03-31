@@ -1,9 +1,5 @@
-import React, { useRef } from 'react';
-import { useDrag, useDrop } from 'react-dnd';
-
+import React from 'react';
 import blankTile from './blankTile.svg';
-
-const TILE = 'tile';
 
 /**
  * Credit to react-dnd simple drag and drop example for the basis for this.
@@ -11,55 +7,9 @@ const TILE = 'tile';
  * MIT licensed.
  */
 
-const Tile = ({ id, suit, value, index, moveTile }) => {
-  const ref = useRef(null);
-  const [, drop] = useDrop({
-    accept: TILE,
-    hover(item, monitor) {
-      if (!ref.current) {
-        return;
-      }
-
-      const dragIndex = item.index;
-      const hoverIndex = index;
-
-      /* Don't drag onto itself */
-      if (dragIndex === hoverIndex) {
-        return;
-      }
-
-      const hoverBoundingRect = ref.current.getBoundingClientRect();
-      const hoverMiddleX =
-        (hoverBoundingRect.right - hoverBoundingRect.left) / 2;
-
-      /* Get mouse position */
-      const clientOffset = monitor.getClientOffset();
-      const hoverClientX = clientOffset.x - hoverBoundingRect.left;
-
-      if (
-        (dragIndex < hoverIndex && hoverClientX < hoverMiddleX) ||
-        (dragIndex > hoverIndex && hoverClientX > hoverMiddleX)
-      ) {
-        return;
-      }
-
-      moveTile(dragIndex, hoverIndex);
-
-      /* unsafe, but ok in this case */
-      item.index = hoverIndex;
-    },
-  });
-
-  const [{ isDragging }, drag] = useDrag({
-    item: { type: TILE, id, index },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-  });
-
-  drag(drop(ref));
+const Tile = ({ suit, value }) => {
   return (
-    <div ref={ref} className="tile">
+    <div className="tile">
       <img src={blankTile} alt="Blank tile" />
       <div className="text">
         {value} <br />
@@ -67,14 +17,8 @@ const Tile = ({ id, suit, value, index, moveTile }) => {
       </div>
       <style jsx>{`
         .tile {
-          margin: 0 0.25rem;
-          opacity: ${isDragging ? 0 : 1};
+          margin: 0.25rem;
           height: 3rem;
-          transition: 0.2s transform;
-        }
-
-        .tile:hover {
-          transform: translate(0, -0.3rem);
         }
 
         img {
