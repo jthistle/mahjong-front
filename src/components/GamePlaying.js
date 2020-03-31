@@ -32,6 +32,7 @@ function GamePlaying(props) {
   const [myTiles, setMyTiles] = useState([]);
   const [turn, setTurn] = useState(0);
   const [heldTile, setHeldTile] = useState();
+  const [waitingForDiscard, setWaitingForDiscard] = useState(false);
 
   const myPos = () => props.gameData.game.myPosition;
 
@@ -51,6 +52,7 @@ function GamePlaying(props) {
             ],
           })
         );
+        setWaitingForDiscard(true);
         break;
       case 'PICKUP_TABLE':
         /* We can assume that the last tile added to discards was the one picked up */
@@ -59,16 +61,21 @@ function GamePlaying(props) {
             $splice: [[prevDisc.length - 1, 1]],
           })
         );
-        setMyTiles((prevMyTiles) =>
-          update(prevMyTiles, {
-            $push: [
-              {
-                suit: event.tile.suit,
-                value: event.tile.value,
-              },
-            ],
-          })
-        );
+        if (event.player === myPos()) {
+          setMyTiles((prevMyTiles) =>
+            update(prevMyTiles, {
+              $push: [
+                {
+                  suit: event.tile.suit,
+                  value: event.tile.value,
+                },
+              ],
+            })
+          );
+        }
+        /* Can't pickup without declaring and discarding, so must be this player's turn */
+        setTurn(event.player);
+        setWaitingForDiscard(true);
         break;
       case 'DISCARD':
         setDiscardedTiles((prevDisc) =>
@@ -105,6 +112,7 @@ function GamePlaying(props) {
             });
           });
         }
+        setWaitingForDiscard(false);
         break;
       default:
         break;
@@ -186,7 +194,7 @@ function GamePlaying(props) {
       <div className="players">{renderPlayers()}</div>
       <GameTable
         tiles={discardedTiles}
-        allowDiscard={turn === myPos()}
+        allowDiscard={turn === myPos() && waitingForDiscard}
         discardCallback={discardHeld}
       />
       <TileRow tiles={myTiles} setHeld={setHeldTile} />

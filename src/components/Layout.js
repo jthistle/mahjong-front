@@ -24,6 +24,7 @@ function Layout(props) {
           color: ${c_TEXT_LIGHT};
           width: 100vw;
           min-height: 100vh;
+          overflow-x: hidden;
         }
 
         .mainContent {
