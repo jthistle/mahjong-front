@@ -1,5 +1,5 @@
 import React from 'react';
-import blankTile from './blankTile.svg';
+import imageFromTile from '../imageFromTile';
 
 /**
  * Credit to react-dnd simple drag and drop example for the basis for this.
@@ -10,27 +10,16 @@ import blankTile from './blankTile.svg';
 const Tile = ({ suit, value }) => {
   return (
     <div className="tile">
-      <img src={blankTile} alt="Blank tile" />
-      <div className="text">
-        {value} <br />
-        {suit.slice(0, 2)}
-      </div>
+      <img src={imageFromTile({ suit, value })} alt="Mahjong tile" />
       <style jsx>{`
         .tile {
           margin: 0.25rem;
-          height: 3rem;
+          height: 3.5rem;
         }
 
         img {
           z-index: -1;
-          height: 3rem;
-        }
-
-        .text {
-          position: relative;
-          top: -3rem;
-          left: 0;
-          color: black;
+          height: 3.5rem;
         }
       `}</style>
     </div>

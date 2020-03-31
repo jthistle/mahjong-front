@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 
-import blankTile from './blankTile.svg';
+import imageFromTile from '../imageFromTile';
 
 const TILE = 'tile';
 
@@ -62,16 +62,12 @@ const DraggableTile = ({ id, suit, value, index, moveTile, setHeld }) => {
   drag(drop(ref));
   return (
     <div ref={ref} className="tile">
-      <img src={blankTile} alt="Blank tile" />
-      <div className="text">
-        {value} <br />
-        {suit.slice(0, 2)}
-      </div>
+      <img src={imageFromTile({ value, suit })} alt="Mahjong tile" />
       <style jsx>{`
         .tile {
           margin: 0.25rem;
           opacity: ${isDragging ? 0 : 1};
-          height: 3rem;
+          height: 3.5rem;
           transition: 0.2s transform;
         }
 
@@ -81,14 +77,7 @@ const DraggableTile = ({ id, suit, value, index, moveTile, setHeld }) => {
 
         img {
           z-index: -1;
-          height: 3rem;
-        }
-
-        .text {
-          position: relative;
-          top: -3rem;
-          left: 0;
-          color: black;
+          height: 3.5rem;
         }
       `}</style>
     </div>
