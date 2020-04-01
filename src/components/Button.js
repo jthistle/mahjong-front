@@ -7,11 +7,18 @@ import {
   c_IN_ACTION,
   c_TEXT_DARK,
   n_BORDER_RADIUS,
+  c_DISABLED,
+  c_TEXT_DISABLED,
+  c_TEXT_LIGHT,
 } from '../theme';
 
 function Button(props) {
   return (
-    <div className="button" onClick={props.onClick}>
+    <button
+      className="button"
+      onClick={props.onClick}
+      disabled={props.disabled}
+    >
       {props.children}
       <style jsx>{`
         .button {
@@ -22,6 +29,10 @@ function Button(props) {
           background: ${c_CALL_TO_ACTION};
           cursor: pointer;
           margin: 0.5rem 1rem;
+          border: none;
+          font-family: inherit;
+          font-size: 1rem;
+          color: ${c_TEXT_LIGHT};
         }
 
         .button:hover {
@@ -33,12 +44,19 @@ function Button(props) {
           background: ${c_IN_ACTION};
           color: ${c_TEXT_DARK};
         }
+
+        .button:disabled {
+          background: ${c_DISABLED};
+          color: ${c_TEXT_DISABLED};
+          cursor: not-allowed;
+        }
       `}</style>
-    </div>
+    </button>
   );
 }
 
 Button.propTypes = {
+  disabled: PropTypes.bool,
   onClick: PropTypes.func,
 };
 

@@ -37,6 +37,8 @@ const c_HIGHLIGHT = c_PRIMARY_LIGHT;
 const c_CALL_TO_ACTION = c_TERTIARY;
 const c_READY_FOR_ACTION = c_TERTIARY_LIGHTER;
 const c_IN_ACTION = c_TERTIARY_LIGHT;
+const c_DISABLED = '#c1c1c1';
+const c_TEXT_DISABLED = '#777';
 
 const c_ERROR = '#e52f0b';
 
@@ -52,6 +54,8 @@ export {
   c_CALL_TO_ACTION,
   c_READY_FOR_ACTION,
   c_IN_ACTION,
+  c_DISABLED,
+  c_TEXT_DISABLED,
   n_BORDER_RADIUS,
   c_BORDER_DARK,
   c_BORDER_LIGHT,

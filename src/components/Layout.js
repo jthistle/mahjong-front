@@ -13,7 +13,9 @@ function Layout(props) {
       <div className="mainContent">{props.children}</div>
       <style jsx>{`
         .background {
-          position: absolute;
+          top: 0;
+          left: 0;
+          position: fixed;
           width: 100vw;
           height: 100vh;
           background: ${c_BACKGROUND};
@@ -24,7 +26,7 @@ function Layout(props) {
           color: ${c_TEXT_LIGHT};
           width: 100vw;
           min-height: 100vh;
-          overflow-x: hidden;
+          overflow-y: hidden;
         }
 
         .mainContent {

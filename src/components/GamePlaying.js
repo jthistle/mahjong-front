@@ -10,6 +10,7 @@ import Layout from './Layout';
 import TileRow from './TileRow';
 import PlayerDisplay from './PlayerDisplay';
 import GameTable from './GameTable';
+import Button from './Button';
 
 import { c_BORDER_LIGHT, n_BORDER_RADIUS } from '../theme';
 
@@ -45,6 +46,7 @@ function GamePlaying(props) {
     switch (event.type) {
       case 'START_TURN':
         setTurn(event.player);
+        setWaitingForDiscard(true);
         break;
       case 'PICKUP_WALL':
         setMyTiles((prevMyTiles) =>
@@ -58,7 +60,6 @@ function GamePlaying(props) {
             ],
           })
         );
-        setWaitingForDiscard(true);
         break;
       case 'PICKUP_TABLE':
         /* We can assume that the last tile added to discards was the one picked up */
@@ -82,7 +83,6 @@ function GamePlaying(props) {
         }
         /* Can't pickup without declaring and discarding, so must be this player's turn */
         setTurn(event.player);
-        setWaitingForDiscard(true);
         break;
       case 'DISCARD':
         setDiscardedTiles((prevDisc) =>
@@ -145,7 +145,6 @@ function GamePlaying(props) {
     if (!heldTile) {
       return;
     }
-    console.log('discarding:', heldTile);
     sendEvent({
       type: 'DISCARD',
       tile: {
@@ -196,19 +195,32 @@ function GamePlaying(props) {
     return players;
   };
 
+  const isMyTurn = () => turn === myPos();
+
   const render = () => (
     <div className="playingArea">
       <div className="players">{renderPlayers()}</div>
       <GameTable
         tiles={discardedTiles}
-        allowDiscard={turn === myPos() && waitingForDiscard}
+        allowDiscard={isMyTurn() && waitingForDiscard}
         discardCallback={discardHeld}
       />
+      {}
       <TileRow tiles={myTiles} setHeld={setHeldTile} />
+      <div className="buttonsRow">
+        <Button disabled={waitingForDiscard || isMyTurn()}>Pung/Kong</Button>
+        <Button disabled={waitingForDiscard || isMyTurn()}>Chow</Button>
+        <Button disabled={waitingForDiscard || isMyTurn()}>Mahjong</Button>
+      </div>
       <style jsx>{`
         .players {
           display: flex;
           justify-content: space-between;
+        }
+
+        .buttonsRow {
+          display: flex;
+          justify-content: space-evenly;
         }
       `}</style>
     </div>
