@@ -36,11 +36,42 @@ const TileRow = (props) => {
   const [tiles, setTiles] = useState([]);
 
   useEffect(() => {
+    const toRemove = [];
+    const toAdd = [];
+
+    /* Gah! Nested for-loops?!? Don't worry, it should be ok... */
+    props.tiles.forEach((incomingTile) => {
+      const res = tiles.some((currentTile) => {
+        if (incomingTile.id === currentTile.id) {
+          return true;
+        }
+      });
+      if (!res) {
+        toAdd.push({
+          ...incomingTile,
+        });
+      }
+    });
+
+    tiles.forEach((currentTile, i) => {
+      const res = props.tiles.some((incomingTile) => {
+        if (currentTile.id === incomingTile.id) {
+          return true;
+        }
+      });
+      if (!res) {
+        toRemove.push(i);
+      }
+    });
+
+    /* Sort removal array desc. */
+    toRemove.sort((a, b) => b - a);
+
     setTiles(
-      props.tiles.map((tile) => ({
-        id: i++,
-        ...tile,
-      }))
+      update(tiles, {
+        $splice: toRemove.map((index) => [index, 1]),
+        $push: toAdd,
+      })
     );
   }, [props.tiles]);
 

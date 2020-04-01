@@ -10,7 +10,7 @@ import imageFromTile from '../imageFromTile';
 const Tile = ({ suit, value }) => {
   return (
     <div className="tile">
-      <img src={imageFromTile({ suit, value })} alt="Mahjong tile" />
+      <img src={imageFromTile({ suit, value })} alt={suit + ' ' + value} />
       <style jsx>{`
         .tile {
           margin: 0.25rem;

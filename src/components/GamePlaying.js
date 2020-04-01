@@ -36,6 +36,11 @@ function GamePlaying(props) {
 
   const myPos = () => props.gameData.game.myPosition;
 
+  const newTileId = (prevTiles) => {
+    const prev = prevTiles[prevTiles.length - 1];
+    return prev ? prev.id + 1 : 0;
+  };
+
   const processEvent = (event) => {
     switch (event.type) {
       case 'START_TURN':
@@ -48,6 +53,7 @@ function GamePlaying(props) {
               {
                 suit: event.tile.suit,
                 value: event.tile.value,
+                id: newTileId(prevMyTiles),
               },
             ],
           })
@@ -68,6 +74,7 @@ function GamePlaying(props) {
                 {
                   suit: event.tile.suit,
                   value: event.tile.value,
+                  id: newTileId(prevMyTiles),
                 },
               ],
             })

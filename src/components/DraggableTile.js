@@ -62,7 +62,7 @@ const DraggableTile = ({ id, suit, value, index, moveTile, setHeld }) => {
   drag(drop(ref));
   return (
     <div ref={ref} className="tile">
-      <img src={imageFromTile({ value, suit })} alt="Mahjong tile" />
+      <img src={imageFromTile({ value, suit })} alt={suit + ' ' + value} />
       <style jsx>{`
         .tile {
           margin: 0.25rem;
