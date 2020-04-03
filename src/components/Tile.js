@@ -1,13 +1,7 @@
 import React from 'react';
 import imageFromTile from '../imageFromTile';
 
-/**
- * Credit to react-dnd simple drag and drop example for the basis for this.
- * https://github.com/react-dnd/react-dnd/blob/master/packages/documentation/examples-hooks/src/04-sortable/simple/index.tsx
- * MIT licensed.
- */
-
-const Tile = ({ suit, value }) => {
+const Tile = ({ suit, value, highlight }) => {
   return (
     <div className="tile">
       <img src={imageFromTile({ suit, value })} alt={suit + ' ' + value} />
@@ -15,6 +9,8 @@ const Tile = ({ suit, value }) => {
         .tile {
           margin: 0.25rem;
           height: 3.5rem;
+          transition: 0.1s opacity;
+          opacity: ${highlight === undefined || highlight ? 1 : 0.6};
         }
 
         img {

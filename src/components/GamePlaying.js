@@ -5,6 +5,7 @@ import { useQuery, useMutation } from '@apollo/client';
 import update from 'immutability-helper';
 import { DndProvider } from 'react-dnd';
 import Backend from 'react-dnd-html5-backend';
+import ProgressBar from 'progressbar.js';
 
 import Layout from './Layout';
 import TileRow from './TileRow';
@@ -12,7 +13,7 @@ import PlayerDisplay from './PlayerDisplay';
 import GameTable from './GameTable';
 import Button from './Button';
 
-import { c_BORDER_LIGHT, n_BORDER_RADIUS } from '../theme';
+import { c_HIGHLIGHT } from '../theme';
 
 const GET_EVENTS = loader('../queries/GetEvents.graphql');
 const SEND_EVENT = loader('../queries/SendEvent.graphql');
@@ -34,8 +35,23 @@ function GamePlaying(props) {
   const [turn, setTurn] = useState(0);
   const [heldTile, setHeldTile] = useState();
   const [waitingForDiscard, setWaitingForDiscard] = useState(false);
+  const [progressBar, setProgressBar] = useState(null);
+  const [selectedTiles, setSelectedTiles] = useState([]);
+  const [validCombination, setValidCombination] = useState(false);
+
+  useEffect(() => {
+    setProgressBar(
+      new ProgressBar.Line('#progressBar', {
+        color: c_HIGHLIGHT,
+        strokeWidth: 0.3,
+        duration: 5000 /* TODO sync this with the server val somehow */,
+      })
+    );
+  }, []);
 
   const myPos = () => props.gameData.game.myPosition;
+
+  const isMyTurn = () => turn === myPos();
 
   const newTileId = (prevTiles) => {
     const prev = prevTiles[prevTiles.length - 1];
@@ -47,6 +63,9 @@ function GamePlaying(props) {
       case 'START_TURN':
         setTurn(event.player);
         setWaitingForDiscard(true);
+        setSelectedTiles([]);
+        setValidCombination(false);
+        progressBar.set(0);
         break;
       case 'PICKUP_WALL':
         setMyTiles((prevMyTiles) =>
@@ -120,6 +139,17 @@ function GamePlaying(props) {
           });
         }
         setWaitingForDiscard(false);
+        progressBar.animate(1);
+        break;
+      case 'DECLARE':
+        setDeclaredTiles((prevDeclared) => {
+          const newDeclared = update(prevDeclared[event.player], {
+            $push: [event.tileSet.tiles.map((tile) => ({ ...tile }))],
+          });
+          return update(prevDeclared, {
+            $splice: [[event.player, 1, newDeclared]],
+          });
+        });
         break;
       default:
         break;
@@ -130,6 +160,12 @@ function GamePlaying(props) {
     actuallySendEvent,
     { loading: loadingSend, data: sendData, error: sendError },
   ] = useMutation(SEND_EVENT);
+
+  useEffect(() => {
+    if (sendError) {
+      console.error('graphql:', sendError);
+    }
+  }, [sendError]);
 
   const sendEvent = (event) => {
     actuallySendEvent({
@@ -149,6 +185,64 @@ function GamePlaying(props) {
       type: 'DISCARD',
       tile: {
         ...heldTile,
+      },
+    });
+  };
+
+  const onSelectTile = (tile) => {
+    if (waitingForDiscard || isMyTurn()) {
+      return;
+    }
+
+    setSelectedTiles((prevSelected) => {
+      let ind;
+      let alreadySelected = prevSelected.some((selTile, i) => {
+        if (selTile.id === tile.id) {
+          ind = i;
+          return true;
+        }
+        return false;
+      });
+      if (alreadySelected) {
+        if (selectedTiles.length === 3 || selectedTiles.length === 4) {
+          setValidCombination(true);
+        } else {
+          setValidCombination(false);
+        }
+        return update(prevSelected, {
+          $splice: [[ind, 1]],
+        });
+      } else {
+        if (selectedTiles.length === 1 || selectedTiles.length === 2) {
+          setValidCombination(true);
+        } else {
+          setValidCombination(false);
+        }
+        return update(prevSelected, {
+          $push: [
+            {
+              ...tile,
+            },
+          ],
+        });
+      }
+    });
+  };
+
+  const submitSelection = () => {
+    const discard = discardedTiles[discardedTiles.length - 1];
+    const tileSet = selectedTiles.map((tile) => ({
+      suit: tile.suit,
+      value: tile.value,
+    }));
+    tileSet.push(discard);
+
+    sendEvent({
+      type: 'PICKUP_TABLE',
+      tile: discard,
+      tileSet: {
+        tiles: tileSet,
+        concealed: false /* TODO */,
       },
     });
   };
@@ -185,7 +279,7 @@ function GamePlaying(props) {
         <PlayerDisplay
           key={i}
           nickname={props.gameData.game.nicknames[i]}
-          declaredTiles={declaredTiles[i]}
+          declared={declaredTiles[i]}
           hasCurrentTurn={i === turn}
         />
       );
@@ -195,8 +289,6 @@ function GamePlaying(props) {
     return players;
   };
 
-  const isMyTurn = () => turn === myPos();
-
   const render = () => (
     <div className="playingArea">
       <div className="players">{renderPlayers()}</div>
@@ -204,14 +296,22 @@ function GamePlaying(props) {
         tiles={discardedTiles}
         allowDiscard={isMyTurn() && waitingForDiscard}
         discardCallback={discardHeld}
+        highlightLast={!waitingForDiscard && !isMyTurn()}
       />
-      {}
-      <TileRow tiles={myTiles} setHeld={setHeldTile} />
-      <div className="buttonsRow">
-        <Button disabled={waitingForDiscard || isMyTurn()}>Pung/Kong</Button>
-        <Button disabled={waitingForDiscard || isMyTurn()}>Chow</Button>
-        <Button disabled={waitingForDiscard || isMyTurn()}>Mahjong</Button>
-      </div>
+      <div id="progressBar"></div>
+      <TileRow
+        tiles={myTiles}
+        setHeld={setHeldTile}
+        onSelectTile={onSelectTile}
+        selectedTiles={selectedTiles}
+        canSelectTile={!waitingForDiscard && !isMyTurn()}
+      />
+      <Button
+        disabled={waitingForDiscard || isMyTurn() || !validCombination}
+        onClick={submitSelection}
+      >
+        Make call
+      </Button>
       <style jsx>{`
         .players {
           display: flex;

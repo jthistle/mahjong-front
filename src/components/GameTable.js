@@ -18,7 +18,13 @@ function GameTable(props) {
   const renderTiles = () => {
     const tiles = [];
     for (let i = 0; i < props.tiles.length; ++i) {
-      tiles.push(<Tile {...props.tiles[i]} key={i} />);
+      tiles.push(
+        <Tile
+          {...props.tiles[i]}
+          key={i}
+          highlight={!props.highlightLast || i === props.tiles.length - 1}
+        />
+      );
     }
     return tiles;
   };
@@ -30,6 +36,7 @@ function GameTable(props) {
         .tiles {
           display: flex;
           flex-direction: row;
+          flex-wrap: wrap;
         }
 
         .mainTable {
@@ -46,6 +53,7 @@ GameTable.propTypes = {
   tiles: PropTypes.array,
   allowDiscard: PropTypes.bool,
   discardCallback: PropTypes.func,
+  highlightLast: PropTypes.bool,
 };
 
 export default GameTable;

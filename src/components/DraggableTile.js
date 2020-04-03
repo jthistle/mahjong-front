@@ -11,7 +11,17 @@ const TILE = 'tile';
  * MIT licensed.
  */
 
-const DraggableTile = ({ id, suit, value, index, moveTile, setHeld }) => {
+const DraggableTile = ({
+  id,
+  suit,
+  value,
+  index,
+  moveTile,
+  setHeld,
+  selected,
+  selectable,
+  onSelectTile,
+}) => {
   const ref = useRef(null);
   const [, drop] = useDrop({
     accept: TILE,
@@ -59,20 +69,38 @@ const DraggableTile = ({ id, suit, value, index, moveTile, setHeld }) => {
     end: () => setHeld(null),
   });
 
+  const getOpacity = () => {
+    if (isDragging) {
+      return 0;
+    } else if (selectable) {
+      if (selected) {
+        return 1;
+      } else {
+        return 0.6;
+      }
+    }
+  };
+
   drag(drop(ref));
   return (
-    <div ref={ref} className="tile">
+    <div
+      ref={ref}
+      className="tile"
+      onClick={() => onSelectTile({ suit, value, id })}
+    >
       <img src={imageFromTile({ value, suit })} alt={suit + ' ' + value} />
       <style jsx>{`
         .tile {
           margin: 0.25rem;
-          opacity: ${isDragging ? 0 : 1};
+          opacity: ${getOpacity()};
           height: 3.5rem;
           transition: 0.2s transform;
+          transform: ${selected ? 'translate(0, -0.5rem)' : 'none'};
+          cursor: pointer;
         }
 
         .tile:hover {
-          transform: translate(0, -0.3rem);
+          transform: translate(0, ${selected ? -0.5 : -0.3}rem);
         }
 
         img {

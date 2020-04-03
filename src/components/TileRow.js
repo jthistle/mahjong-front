@@ -1,38 +1,11 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { DndProvider, useDrag, useDrop } from 'react-dnd';
-import Backend from 'react-dnd-html5-backend';
 import update from 'immutability-helper';
 
 import { c_TILE_RACK, n_BORDER_RADIUS } from '../theme';
 import Tile from './DraggableTile';
 
-const TILE = 'tile';
-
-function TileSpace(props) {
-  const [{ isOver, canDrop }, drop] = useDrop({
-    accept: TILE,
-    collect: (mon) => ({
-      isOver: !!mon.isOver(),
-      canDrop: !!mon.canDrop(),
-    }),
-  });
-
-  return (
-    <div>
-      <style jsx>{`
-        div {
-          height: 3rem;
-          width: 2rem;
-          background: white;
-        }
-      `}</style>
-    </div>
-  );
-}
-
 const TileRow = (props) => {
-  let i = 0;
   const [tiles, setTiles] = useState([]);
 
   useEffect(() => {
@@ -45,6 +18,7 @@ const TileRow = (props) => {
         if (incomingTile.id === currentTile.id) {
           return true;
         }
+        return false;
       });
       if (!res) {
         toAdd.push({
@@ -58,6 +32,7 @@ const TileRow = (props) => {
         if (currentTile.id === incomingTile.id) {
           return true;
         }
+        return false;
       });
       if (!res) {
         toRemove.push(i);
@@ -91,6 +66,13 @@ const TileRow = (props) => {
   );
 
   const renderTile = (tile, index) => {
+    let selected = false;
+    for (let i = 0; i < props.selectedTiles.length; ++i) {
+      if (props.selectedTiles[i].id === tile.id) {
+        selected = true;
+        break;
+      }
+    }
     return (
       <Tile
         key={tile.id}
@@ -98,6 +80,9 @@ const TileRow = (props) => {
         text={tile.text}
         moveTile={moveTile}
         setHeld={props.setHeld}
+        selected={selected}
+        selectable={props.canSelectTile}
+        onSelectTile={props.onSelectTile}
         {...tile}
       />
     );
@@ -126,6 +111,9 @@ const TileRow = (props) => {
 TileRow.propTypes = {
   tiles: PropTypes.array,
   setHeld: PropTypes.func,
+  onSelectTile: PropTypes.func,
+  selectedTiles: PropTypes.array,
+  canSelectTile: PropTypes.bool,
 };
 
 export default TileRow;

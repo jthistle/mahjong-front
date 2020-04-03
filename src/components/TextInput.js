@@ -28,6 +28,7 @@ function TextInput(props) {
           font-size: 1rem;
           padding: 1rem;
           transition: all 0.1s;
+          font-family: inherit;
         }
 
         input:focus {
