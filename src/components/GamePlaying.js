@@ -39,6 +39,13 @@ function GamePlaying(props) {
   const [progressBar, setProgressBar] = useState(null);
   const [selectedTiles, setSelectedTiles] = useState([]);
   const [validCombination, setValidCombination] = useState(false);
+  const [animateEvents, setAnimateEvents] = useState(false);
+  const [playerSpeech, setPlayerSpeech] = useState(
+    Array(props.gameData.game.nicknames.length).fill(null)
+  );
+  const [speechTimeouts, setSpeechTimeouts] = useState(
+    Array(props.gameData.game.nicknames.length).fill(null)
+  );
 
   useEffect(() => {
     setProgressBar(
@@ -49,6 +56,37 @@ function GamePlaying(props) {
       })
     );
   }, []);
+
+  const playerSay = (player, text, time = 2000) => {
+    if (!animateEvents) {
+      return;
+    }
+    if (speechTimeouts[player]) {
+      clearTimeout(speechTimeouts[player]);
+    }
+    setPlayerSpeech((prev) =>
+      update(prev, {
+        $splice: [[player, 1, text]],
+      })
+    );
+    const timeout = setTimeout(() => {
+      setPlayerSpeech((prev) =>
+        update(prev, {
+          $splice: [[player, 1, null]],
+        })
+      );
+      setSpeechTimeouts((prev) =>
+        update(prev, {
+          $splice: [[player, 1, null]],
+        })
+      );
+    }, time);
+    setSpeechTimeouts((prev) =>
+      update(prev, {
+        $splice: [[player, 1, timeout]],
+      })
+    );
+  };
 
   const myPos = () => props.gameData.game.myPosition;
 
@@ -146,9 +184,10 @@ function GamePlaying(props) {
         progressBar.animate(1);
         break;
       case 'DECLARE':
+        const tiles = event.tileSet.tiles;
         setDeclaredTiles((prevDeclared) => {
           const newDeclared = update(prevDeclared[event.player], {
-            $push: [event.tileSet.tiles.map((tile) => ({ ...tile }))],
+            $push: [tiles.map((tile) => ({ ...tile }))],
           });
           return update(prevDeclared, {
             $splice: [[event.player, 1, newDeclared]],
@@ -157,7 +196,7 @@ function GamePlaying(props) {
         if (event.player === myPos()) {
           setMyTiles((prevMyTiles) => {
             let toRemove = [];
-            event.tileSet.tiles.forEach((declaredTile) => {
+            tiles.forEach((declaredTile) => {
               for (let i = 0; i < prevMyTiles.length; ++i) {
                 if (
                   prevMyTiles[i].suit === declaredTile.suit &&
@@ -176,6 +215,15 @@ function GamePlaying(props) {
               $splice: toRemove.map((ind) => [ind, 1]),
             });
           });
+        }
+        if (tiles[0].value === tiles[1].value) {
+          if (tiles.length === 4) {
+            playerSay(event.player, 'Kong!');
+          } else {
+            playerSay(event.player, 'Pung!');
+          }
+        } else {
+          playerSay(event.player, 'Chow!');
         }
         break;
       default:
@@ -290,6 +338,9 @@ function GamePlaying(props) {
 
     eventsData.events.events.forEach(processEvent);
     setOffset(eventsData.events.offset);
+    if (!animateEvents) {
+      setAnimateEvents(true);
+    }
   }, [loadingEvents, eventsData]);
 
   const renderPlayers = () => {
@@ -313,6 +364,7 @@ function GamePlaying(props) {
           }
           declared={declaredTiles[i]}
           hasCurrentTurn={i === turn}
+          speech={playerSpeech[i]}
         />
       );
       i += 1;
