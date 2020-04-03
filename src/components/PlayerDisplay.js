@@ -4,13 +4,15 @@ import PropTypes from 'prop-types';
 import Tile from './Tile';
 
 function PlayerDisplay(props) {
+  let i = 0;
+  let j = 0;
   return (
     <div className="player">
       <div className="tiles">
         {props.declared.map((tileSet) => (
-          <div className="tileSet">
+          <div className="tileSet" key={j++}>
             {tileSet.map((tile) => (
-              <Tile {...tile} />
+              <Tile {...tile} key={i++} />
             ))}
             <br />
           </div>
@@ -19,7 +21,7 @@ function PlayerDisplay(props) {
       <div className="nickname">{props.nickname}</div>
       <style jsx>{`
         .nickname {
-          font-size: 1.5rem;
+          font-size: 1.2rem;
           font-weight: ${props.hasCurrentTurn ? 'bold' : 'normal'};
         }
         .tiles {
@@ -32,9 +34,7 @@ function PlayerDisplay(props) {
           flex-direction: row;
         }
         .player {
-          width: 10rem;
           min-height: 5rem;
-          border: 1px solid red;
         }
       `}</style>
     </div>

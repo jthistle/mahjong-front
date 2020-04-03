@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { useDrop } from 'react-dnd';
 
 import Tile from './Tile';
+import { n_BORDER_RADIUS } from '../theme';
 
 const TILE = 'tile';
 
@@ -41,7 +42,7 @@ function GameTable(props) {
 
         .mainTable {
           height: 20rem;
-          border: 1px solid black;
+          border-radius: ${n_BORDER_RADIUS};
           background: ${isHovered ? 'rgba(0, 0, 0, 0.3)' : 'none'};
         }
       `}</style>

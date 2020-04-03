@@ -33,6 +33,7 @@ function GamePlaying(props) {
   const [discardedTiles, setDiscardedTiles] = useState([]);
   const [myTiles, setMyTiles] = useState([]);
   const [turn, setTurn] = useState(0);
+  const [east, setEast] = useState(0);
   const [heldTile, setHeldTile] = useState();
   const [waitingForDiscard, setWaitingForDiscard] = useState(false);
   const [progressBar, setProgressBar] = useState(null);
@@ -66,6 +67,9 @@ function GamePlaying(props) {
         setSelectedTiles([]);
         setValidCombination(false);
         progressBar.set(0);
+        break;
+      case 'SET_EAST':
+        setEast(event.player);
         break;
       case 'PICKUP_WALL':
         setMyTiles((prevMyTiles) =>
@@ -150,6 +154,29 @@ function GamePlaying(props) {
             $splice: [[event.player, 1, newDeclared]],
           });
         });
+        if (event.player === myPos()) {
+          setMyTiles((prevMyTiles) => {
+            let toRemove = [];
+            event.tileSet.tiles.forEach((declaredTile) => {
+              for (let i = 0; i < prevMyTiles.length; ++i) {
+                if (
+                  prevMyTiles[i].suit === declaredTile.suit &&
+                  prevMyTiles[i].value === declaredTile.value
+                ) {
+                  if (!toRemove.includes(i)) {
+                    toRemove.push(i);
+                    break;
+                  }
+                }
+              }
+            });
+            /* Reverse toRemove */
+            toRemove.sort((a, b) => b - a);
+            return update(prevMyTiles, {
+              $splice: toRemove.map((ind) => [ind, 1]),
+            });
+          });
+        }
         break;
       default:
         break;
@@ -267,18 +294,23 @@ function GamePlaying(props) {
 
   const renderPlayers = () => {
     const players = [];
-    let i = myPos() + 1;
+    let i = -1;
     while (true) {
       if (i >= props.gameData.game.nicknames.length) {
         i = 0;
       }
-      if (i === myPos()) {
+      if (i === east) {
         break;
+      }
+      if (i === -1) {
+        i = east;
       }
       players.push(
         <PlayerDisplay
           key={i}
-          nickname={props.gameData.game.nicknames[i]}
+          nickname={
+            props.gameData.game.nicknames[i] + (i === myPos() ? ' (you)' : '')
+          }
           declared={declaredTiles[i]}
           hasCurrentTurn={i === turn}
         />
@@ -315,7 +347,7 @@ function GamePlaying(props) {
       <style jsx>{`
         .players {
           display: flex;
-          justify-content: space-between;
+          justify-content: space-evenly;
         }
 
         .buttonsRow {
