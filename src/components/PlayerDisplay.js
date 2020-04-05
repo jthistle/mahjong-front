@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import Tile from './Tile';
-import { c_HIGHLIGHT, n_BORDER_RADIUS } from '../theme';
+import { c_HIGHLIGHT, n_BORDER_RADIUS, c_TEXT_DARK } from '../theme';
 
 function PlayerDisplay(props) {
   let i = 0;
@@ -56,6 +56,7 @@ function PlayerDisplay(props) {
           margin: auto;
           left: 0;
           right: 0;
+          color: ${c_TEXT_DARK};
           opacity: ${props.speech === null ? 0 : 0.9};
         }
       `}</style>

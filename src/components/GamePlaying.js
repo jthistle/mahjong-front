@@ -46,6 +46,9 @@ function GamePlaying(props) {
   const [speechTimeouts, setSpeechTimeouts] = useState(
     Array(props.gameData.game.nicknames.length).fill(null)
   );
+  const [attemptedMahjong, setAttemptedMahjong] = useState(false);
+  const [hasSentMahjong, setHasSentMahjong] = useState(false);
+  const [roundFinished, setRoundFinished] = useState(false);
 
   useEffect(() => {
     setProgressBar(
@@ -104,6 +107,8 @@ function GamePlaying(props) {
         setWaitingForDiscard(true);
         setSelectedTiles([]);
         setValidCombination(false);
+        setAttemptedMahjong(false);
+        setHasSentMahjong(false);
         progressBar.set(0);
         break;
       case 'SET_EAST':
@@ -226,6 +231,10 @@ function GamePlaying(props) {
           playerSay(event.player, 'Chow!');
         }
         break;
+      case 'MAHJONG':
+        playerSay(event.player, 'Mahjong!', 3000);
+        setRoundFinished(true);
+        break;
       default:
         break;
     }
@@ -322,6 +331,17 @@ function GamePlaying(props) {
     });
   };
 
+  const submitMahjong = () => {
+    if (attemptedMahjong) {
+      sendEvent({
+        type: 'MAHJONG',
+      });
+      setHasSentMahjong(true);
+    } else {
+      setAttemptedMahjong(true);
+    }
+  };
+
   const { loading: loadingEvents, data: eventsData } = useQuery(GET_EVENTS, {
     variables: {
       userHash: localStorage.getItem('userHash'),
@@ -390,6 +410,12 @@ function GamePlaying(props) {
         selectedTiles={selectedTiles}
         canSelectTile={!waitingForDiscard && !isMyTurn()}
       />
+      <Button
+        disabled={waitingForDiscard !== isMyTurn() || hasSentMahjong}
+        onClick={submitMahjong}
+      >
+        {attemptedMahjong ? 'Confirm Mahjong' : 'Call Mahjong'}
+      </Button>
       <Button
         disabled={waitingForDiscard || isMyTurn() || !validCombination}
         onClick={submitSelection}
