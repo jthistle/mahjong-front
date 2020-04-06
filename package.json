@@ -16,11 +16,13 @@
     "react-dnd-html5-backend": "^10.0.2",
     "react-dom": "^16.12.0",
     "react-scripts": "3.2.0",
+    "serve": "^11.3.0",
     "styled-jsx": "^3.2.4"
   },
   "scripts": {
-    "dev": "react-app-rewired start",
+    "start": "serve -s build",
     "build": "react-app-rewired build",
+    "dev": "react-app-rewired start",
     "test": "react-app-rewired test",
     "prettify": "prettier --write \"src/**/*.js\""
   },

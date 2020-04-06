@@ -16,7 +16,7 @@ import Test from './pages/Test';
 const client = new ApolloClient({
   cache: new InMemoryCache(),
   link: new HttpLink({
-    uri: 'http://localhost:4000/graphql', // TODO make work for prod
+    uri: `http://${process.env.REACT_APP_BACKEND_HOST}:${process.env.REACT_APP_BACKEND_PORT}/graphql`,
   }),
 });
 
