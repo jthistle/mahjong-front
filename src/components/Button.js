@@ -10,6 +10,9 @@ import {
   c_DISABLED,
   c_TEXT_DISABLED,
   c_TEXT_LIGHT,
+  c_WARNING,
+  c_WARNING_ACTIVE,
+  c_WARNING_HIGHLIGHT,
 } from '../theme';
 
 function Button(props) {
@@ -26,7 +29,7 @@ function Button(props) {
           padding: 1rem 2rem;
           border-radius: ${n_BORDER_RADIUS};
           transition: 0.1s all;
-          background: ${c_CALL_TO_ACTION};
+          background: ${props.warning ? c_WARNING : c_CALL_TO_ACTION};
           cursor: pointer;
           margin: 0.5rem 1rem;
           border: none;
@@ -36,12 +39,14 @@ function Button(props) {
         }
 
         .button:hover {
-          background: ${c_READY_FOR_ACTION};
+          background: ${props.warning
+            ? c_WARNING_HIGHLIGHT
+            : c_READY_FOR_ACTION};
           color: ${c_TEXT_DARK};
         }
 
         .button:active {
-          background: ${c_IN_ACTION};
+          background: ${props.warning ? c_WARNING_ACTIVE : c_IN_ACTION};
           color: ${c_TEXT_DARK};
         }
 
@@ -58,6 +63,7 @@ function Button(props) {
 Button.propTypes = {
   disabled: PropTypes.bool,
   onClick: PropTypes.func,
+  warning: PropTypes.bool,
 };
 
 export default Button;

@@ -32,6 +32,10 @@ function Game(props) {
     return <h1>Loading, please wait...</h1>;
   }
 
+  if (!gameData.game) {
+    redirectTo('/lobby');
+  }
+
   if (gameError) {
     return (
       <>
@@ -50,7 +54,13 @@ function Game(props) {
       />
     );
   } else if (gameData.game.stage === 'PLAY') {
-    return <GamePlaying hash={props.hash} gameData={gameData} />;
+    return (
+      <GamePlaying
+        hash={props.hash}
+        gameData={gameData}
+        refetchGame={refetchGame}
+      />
+    );
   }
 }
 

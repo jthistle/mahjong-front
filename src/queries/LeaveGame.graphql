@@ -1,0 +1,3 @@
+mutation LeaveGame($userHash: String!, $gameHash: String!) {
+  leaveGame(userHash: $userHash, gameHash: $gameHash)
+}

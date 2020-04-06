@@ -17,10 +17,10 @@ import { c_HIGHLIGHT } from '../theme';
 
 const GET_EVENTS = loader('../queries/GetEvents.graphql');
 const SEND_EVENT = loader('../queries/SendEvent.graphql');
+const LEAVE_GAME = loader('../queries/LeaveGame.graphql');
 
 function GamePlaying(props) {
   const [offset, setOffset] = useState(-1);
-
   const [declaredTiles, setDeclaredTiles] = useState(
     (() => {
       const acc = [];
@@ -48,7 +48,14 @@ function GamePlaying(props) {
   );
   const [attemptedMahjong, setAttemptedMahjong] = useState(false);
   const [hasSentMahjong, setHasSentMahjong] = useState(false);
-  const [roundFinished, setRoundFinished] = useState(false);
+  const [winner, setWinner] = useState(null);
+  const [gameOver, setGameOver] = useState(false);
+
+  const refetchGame = () =>
+    props.refetchGame({
+      userHash: localStorage.getItem('userHash'),
+      gameHash: props.hash,
+    });
 
   useEffect(() => {
     setProgressBar(
@@ -233,7 +240,16 @@ function GamePlaying(props) {
         break;
       case 'MAHJONG':
         playerSay(event.player, 'Mahjong!', 3000);
-        setRoundFinished(true);
+        setWinner(event.player);
+        setTurn(event.player);
+        break;
+      case 'ROUND_END':
+        setGameOver(true);
+        progressBar.set(0);
+        progressBar.animate(1, {
+          duration: 10000,
+        });
+        setTimeout(refetchGame, 10000);
         break;
       default:
         break;
@@ -342,13 +358,23 @@ function GamePlaying(props) {
     }
   };
 
+  const [doLeaveGame] = useMutation(LEAVE_GAME);
+
+  const leaveGame = () => {
+    doLeaveGame({
+      userHash: localStorage.getItem('userHash'),
+      gameHash: props.hash,
+    });
+    refetchGame();
+  };
+
   const { loading: loadingEvents, data: eventsData } = useQuery(GET_EVENTS, {
     variables: {
       userHash: localStorage.getItem('userHash'),
       gameHash: props.hash,
       offset,
     },
-    pollInterval: 1000, // TODO change
+    pollInterval: 500, // TODO change
   });
 
   useEffect(() => {
@@ -385,12 +411,65 @@ function GamePlaying(props) {
           declared={declaredTiles[i]}
           hasCurrentTurn={i === turn}
           speech={playerSpeech[i]}
+          isWinner={i === winner}
         />
       );
       i += 1;
     }
 
     return players;
+  };
+
+  const renderTileControls = () => {
+    return (
+      <>
+        <TileRow
+          tiles={myTiles}
+          setHeld={setHeldTile}
+          onSelectTile={onSelectTile}
+          selectedTiles={selectedTiles}
+          canSelectTile={!waitingForDiscard && !isMyTurn()}
+        />
+        <div className="buttons">
+          <Button warning onClick={leaveGame}>
+            Leave game
+          </Button>
+          <Button
+            disabled={waitingForDiscard || isMyTurn() || !validCombination}
+            onClick={submitSelection}
+          >
+            Make call
+          </Button>
+          <Button
+            disabled={waitingForDiscard !== isMyTurn() || hasSentMahjong}
+            onClick={submitMahjong}
+            warning={attemptedMahjong}
+          >
+            {attemptedMahjong ? 'Confirm Mahjong' : 'Call Mahjong'}
+          </Button>
+        </div>
+        <style jsx>{`
+          .buttons {
+            display: flex;
+            justify-content: space-between;
+          }
+        `}</style>
+      </>
+    );
+  };
+
+  const renderGameOver = () => {
+    return (
+      <div className="gameOver">
+        The round has finished....
+        <Button onClick={() => refetchGame()}>Next round</Button>
+        <style jsx>{`
+          .gameOver {
+            font-size: 1.5rem;
+          }
+        `}</style>
+      </div>
+    );
   };
 
   const render = () => (
@@ -403,25 +482,7 @@ function GamePlaying(props) {
         highlightLast={!waitingForDiscard && !isMyTurn()}
       />
       <div id="progressBar"></div>
-      <TileRow
-        tiles={myTiles}
-        setHeld={setHeldTile}
-        onSelectTile={onSelectTile}
-        selectedTiles={selectedTiles}
-        canSelectTile={!waitingForDiscard && !isMyTurn()}
-      />
-      <Button
-        disabled={waitingForDiscard !== isMyTurn() || hasSentMahjong}
-        onClick={submitMahjong}
-      >
-        {attemptedMahjong ? 'Confirm Mahjong' : 'Call Mahjong'}
-      </Button>
-      <Button
-        disabled={waitingForDiscard || isMyTurn() || !validCombination}
-        onClick={submitSelection}
-      >
-        Make call
-      </Button>
+      {gameOver ? renderGameOver() : renderTileControls()}
       <style jsx>{`
         .players {
           display: flex;

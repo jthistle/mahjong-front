@@ -1,0 +1,3 @@
+mutation SetReady($userHash: String!, $gameHash: String!, $ready: Boolean!) {
+  setReady(userHash: $userHash, gameHash: $gameHash, ready: $ready)
+}

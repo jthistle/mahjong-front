@@ -41,6 +41,9 @@ const c_DISABLED = '#c1c1c1';
 const c_TEXT_DISABLED = '#777';
 
 const c_ERROR = '#e52f0b';
+const c_WARNING = '#d83600';
+const c_WARNING_HIGHLIGHT = '#ed6e44';
+const c_WARNING_ACTIVE = '#efa086';
 
 const n_BORDER_RADIUS = '0.5rem';
 
@@ -62,4 +65,7 @@ export {
   c_ERROR,
   c_HIGHLIGHT,
   c_TILE_RACK,
+  c_WARNING,
+  c_WARNING_HIGHLIGHT,
+  c_WARNING_ACTIVE,
 };

@@ -2,7 +2,12 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import Tile from './Tile';
-import { c_HIGHLIGHT, n_BORDER_RADIUS, c_TEXT_DARK } from '../theme';
+import {
+  c_HIGHLIGHT,
+  n_BORDER_RADIUS,
+  c_TEXT_DARK,
+  c_TEXT_LIGHT,
+} from '../theme';
 
 function PlayerDisplay(props) {
   let i = 0;
@@ -25,7 +30,9 @@ function PlayerDisplay(props) {
           </div>
         ))}
       </div>
-      <div className="nickname">{props.nickname}</div>
+      <div className="nickname">
+        {props.nickname} {props.isWinner && 'wins!'}
+      </div>
       <div className="speech">{speech}</div>
       <style jsx>{`
         .nickname {
@@ -45,6 +52,10 @@ function PlayerDisplay(props) {
           min-height: 0rem;
           position: relative; /* So that the speech bubble floats */
           flex-grow: 1;
+          color: ${props.isWinner ? c_TEXT_DARK : c_TEXT_LIGHT};
+          background: ${props.isWinner ? c_HIGHLIGHT : 'none'};
+          border-radius: ${n_BORDER_RADIUS};
+          transition: 0.2s all;
         }
         .speech {
           background-color: ${c_HIGHLIGHT};
@@ -70,6 +81,7 @@ PlayerDisplay.propTypes = {
   declared: PropTypes.array,
   hasCurrentTurn: PropTypes.bool,
   speech: PropTypes.string,
+  isWinner: PropTypes.bool,
 };
 
 export default PlayerDisplay;
