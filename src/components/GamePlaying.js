@@ -362,8 +362,10 @@ function GamePlaying(props) {
 
   const leaveGame = () => {
     doLeaveGame({
-      userHash: localStorage.getItem('userHash'),
-      gameHash: props.hash,
+      variables: {
+        userHash: localStorage.getItem('userHash'),
+        gameHash: props.hash,
+      },
     });
     refetchGame();
   };
@@ -379,6 +381,12 @@ function GamePlaying(props) {
 
   useEffect(() => {
     if (loadingEvents || !eventsData) {
+      return;
+    }
+
+    if (!eventsData.events) {
+      /* This shows that someone has probably left the game */
+      refetchGame();
       return;
     }
 

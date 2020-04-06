@@ -32,8 +32,10 @@ function Game(props) {
     return <h1>Loading, please wait...</h1>;
   }
 
-  if (!gameData.game) {
+  if (!gameData.game || gameData.game.stage === 'FINISHED') {
+    console.log(gameData);
     redirectTo('/lobby');
+    return <h1>Redirecting...</h1>;
   }
 
   if (gameError) {
