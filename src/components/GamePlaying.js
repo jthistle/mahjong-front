@@ -258,7 +258,7 @@ function GamePlaying(props) {
 
   const [
     actuallySendEvent,
-    { loading: loadingSend, data: sendData, error: sendError },
+    { /* loading: loadingSend, data: sendData, */ error: sendError },
   ] = useMutation(SEND_EVENT);
 
   useEffect(() => {
@@ -395,6 +395,7 @@ function GamePlaying(props) {
     if (!animateEvents) {
       setAnimateEvents(true);
     }
+    /* eslint-disable-next-line */
   }, [loadingEvents, eventsData]);
 
   const renderPlayers = () => {

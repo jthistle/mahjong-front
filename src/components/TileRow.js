@@ -48,6 +48,7 @@ const TileRow = (props) => {
         $push: toAdd,
       })
     );
+    /* eslint-disable-next-line */
   }, [props.tiles]);
 
   const moveTile = useCallback(
