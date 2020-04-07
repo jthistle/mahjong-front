@@ -13,10 +13,14 @@ import Lobby from './pages/Lobby';
 import Game from './pages/Game';
 import Test from './pages/Test';
 
+console.log(
+  `Connecting to ${process.env.REACT_APP_BACKEND_HOST}:${process.env.REACT_APP_BACKEND_PORT}/graphql`
+);
+
 const client = new ApolloClient({
   cache: new InMemoryCache(),
   link: new HttpLink({
-    uri: `http://${process.env.REACT_APP_BACKEND_HOST}:${process.env.REACT_APP_BACKEND_PORT}/graphql`,
+    uri: `${process.env.REACT_APP_BACKEND_HOST}:${process.env.REACT_APP_BACKEND_PORT}/graphql`,
   }),
 });
 
