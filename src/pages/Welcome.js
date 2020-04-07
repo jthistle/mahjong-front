@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { redirectTo } from '@reach/router';
+import { navigate } from '@reach/router';
 import { useMutation } from '@apollo/client';
 import { loader } from 'graphql.macro';
 
@@ -32,7 +32,7 @@ function Welcome(props) {
   useEffect(() => {
     const hash = localStorage.getItem('userHash');
     if (hash) {
-      redirectTo('/lobby');
+      navigate('/lobby');
     }
   }, []);
 
@@ -43,7 +43,7 @@ function Welcome(props) {
     const hash = createData.createUser;
     if (hash) {
       localStorage.setItem('userHash', hash);
-      redirectTo('/lobby');
+      navigate('/lobby');
     }
   }, [loadingCreate, createData]);
 

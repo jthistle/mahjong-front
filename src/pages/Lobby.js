@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useMutation, useQuery } from '@apollo/client';
-import { redirectTo } from '@reach/router';
+import { navigate } from '@reach/router';
 import { loader } from 'graphql.macro';
 
 import Layout from '../components/Layout';
@@ -17,7 +17,7 @@ function Lobby(props) {
 
   useEffect(() => {
     if (!localStorage.getItem('userHash')) {
-      redirectTo('/');
+      navigate('/');
     }
   }, []);
 
@@ -33,7 +33,7 @@ function Lobby(props) {
 
     const possibleHash = inGameData.user.inGame;
     if (possibleHash) {
-      redirectTo('/game/' + possibleHash);
+      navigate('/game/' + possibleHash);
     }
   }, [loadingInGame, inGameData]);
 
@@ -56,7 +56,7 @@ function Lobby(props) {
 
     const hash = createData.createGame;
     if (hash) {
-      redirectTo('/game/' + hash);
+      navigate('/game/' + hash);
     }
   }, [loadingCreate, createData]);
 
@@ -86,7 +86,7 @@ function Lobby(props) {
 
     const hash = joinData.joinGame;
     if (hash) {
-      redirectTo('/game/' + hash);
+      navigate('/game/' + hash);
     } else {
       setInErrorState(true);
     }

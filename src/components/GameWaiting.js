@@ -3,7 +3,7 @@ import { loader } from 'graphql.macro';
 import PropTypes from 'prop-types';
 import { useQuery, useMutation } from '@apollo/client';
 import Button from './Button';
-import { useNavigate } from '@reach/router';
+import { navigate } from '@reach/router';
 
 import Layout from './Layout';
 
@@ -16,7 +16,6 @@ const LEAVE_GAME = loader('../queries/LeaveGame.graphql');
 function GameWaiting(props) {
   const [nicknames, setNicknames] = useState([]);
   const [ready, setReady] = useState(false);
-  const navigate = useNavigate();
 
   const [sendReady, { error }] = useMutation(SET_READY);
   const [doLeaveGame] = useMutation(LEAVE_GAME);

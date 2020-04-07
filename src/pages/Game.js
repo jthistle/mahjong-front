@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { loader } from 'graphql.macro';
-import { redirectTo } from '@reach/router';
+import { navigate } from '@reach/router';
 import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/client';
 
@@ -12,7 +12,7 @@ const GET_GAME = loader('../queries/GetGame.graphql');
 function Game(props) {
   useEffect(() => {
     if (!localStorage.getItem('userHash')) {
-      redirectTo('/');
+      navigate('/');
     }
   }, []);
 
@@ -34,7 +34,7 @@ function Game(props) {
 
   if (!gameData.game || gameData.game.stage === 'FINISHED') {
     console.log(gameData);
-    redirectTo('/lobby');
+    navigate('/lobby');
     return <h1>Redirecting...</h1>;
   }
 
