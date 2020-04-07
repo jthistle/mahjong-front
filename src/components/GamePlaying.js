@@ -62,7 +62,7 @@ function GamePlaying(props) {
       new ProgressBar.Line('#progressBar', {
         color: c_HIGHLIGHT,
         strokeWidth: 0.3,
-        duration: 5000 /* TODO sync this with the server val somehow */,
+        duration: 6000 /* TODO sync this with the server val somehow */,
       })
     );
   }, []);
@@ -390,8 +390,15 @@ function GamePlaying(props) {
       return;
     }
 
-    eventsData.events.events.forEach(processEvent);
-    setOffset(eventsData.events.offset);
+    console.log('process');
+    eventsData.events.events.forEach((ev) => {
+      console.log(ev);
+      processEvent(ev);
+    });
+    setOffset(() => {
+      console.log('set offset');
+      return eventsData.events.offset;
+    });
     if (!animateEvents) {
       setAnimateEvents(true);
     }
@@ -462,6 +469,10 @@ function GamePlaying(props) {
             display: flex;
             justify-content: space-between;
           }
+
+          .bold {
+            font-weight: bold;
+          }
         `}</style>
       </>
     );
@@ -490,6 +501,12 @@ function GamePlaying(props) {
         discardCallback={discardHeld}
         highlightLast={!waitingForDiscard && !isMyTurn()}
       />
+      <div>
+        <span className="bold">
+          {eventsData ? eventsData.events.tilesRemaining : 'Some'}
+        </span>{' '}
+        tiles remaining
+      </div>
       <div id="progressBar"></div>
       {gameOver ? renderGameOver() : renderTileControls()}
       <style jsx>{`
