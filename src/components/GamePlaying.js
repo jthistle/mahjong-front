@@ -238,6 +238,50 @@ function GamePlaying(props) {
           playerSay(event.player, 'Chow!');
         }
         break;
+      case 'AUGMENT_DECLARED':
+        setDeclaredTiles((prevDeclared) => {
+          const decl = prevDeclared[event.player];
+          for (let i = 0; i < decl.length; ++i) {
+            if (
+              !(
+                event.tile.value === decl[i][0].value &&
+                event.tile.suit === decl[i][0].suit &&
+                event.tile.value === decl[i][1].value &&
+                event.tile.suit === decl[i][1].suit
+              )
+            ) {
+              continue;
+            }
+
+            const newDeclared = update(decl, {
+              $push: [{ ...event.tile }],
+            });
+            return update(prevDeclared, {
+              $splice: [[event.player, 1, newDeclared]],
+            });
+          }
+        });
+
+        if (event.player === myPos()) {
+          setMyTiles((prevMyTiles) => {
+            for (let i = prevMyTiles.length - 1; i > -1; --i) {
+              if (
+                !(
+                  prevMyTiles[i].value === event.tile.value &&
+                  prevMyTiles[i].suit === event.tile.suit
+                )
+              ) {
+                continue;
+              }
+
+              return update(prevMyTiles, {
+                $splice: [[i, 1]],
+              });
+            }
+          });
+        }
+        playerSay(event.player, 'Kong!');
+        break;
       case 'MAHJONG':
         playerSay(event.player, 'Mahjong!', 3000);
         setWinner(event.player);
